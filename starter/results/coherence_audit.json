@@ -1,0 +1,265 @@
+{
+  "audit_note": "Manual coherence audit performed by the author (Hoàng Minh Huy, 2A202603495). Author is the labeler — conflict of interest noted. 10 source positions audited across all 3 strategies. Same positions, same section content, different chunk boundaries.",
+  "scale": "0 = cut mid-sentence/idea, subject lost, cannot understand standalone; 1 = mostly understandable but missing context or starts mid-sentence; 2 = self-contained, preserves full idea",
+  "positions": [
+    {
+      "position_id": "P1",
+      "document_id": "retrieval-augmented_generation",
+      "section_page": 0,
+      "section_title": "Introduction",
+      "section_chars": 1864,
+      "strategy_A": {
+        "chunk_id": "retrieval-augmented_generation_p0_fixed_0",
+        "chunk_chars": 500,
+        "score": 2,
+        "reason": "Starts at paragraph beginning, ends mid-sentence ('For example, this enables LLM-based chatbots to acc…') — but covers the core definition clearly. The cutoff is mid-sentence but the main idea (RAG enables LLMs to retrieve external data) is fully conveyed."
+      },
+      "strategy_B": {
+        "chunk_id": "retrieval-augmented_generation_p0_para_0",
+        "chunk_chars": 775,
+        "score": 2,
+        "reason": "Paragraph boundary preserved. Covers the full first paragraph (definition + improvement claim). Self-contained and coherent."
+      },
+      "strategy_C": {
+        "chunk_id": "retrieval-augmented_generation_p0_para_0",
+        "chunk_chars": 775,
+        "score": 2,
+        "reason": "Same as B — paragraph boundary preserved, full idea intact."
+      }
+    },
+    {
+      "position_id": "P2",
+      "document_id": "bert_language_model",
+      "section_page": 5,
+      "section_title": "Masked language modeling",
+      "section_chars": 1573,
+      "strategy_A": {
+        "chunk_id": "bert_language_model_p5_fixed_0",
+        "chunk_chars": 500,
+        "score": 1,
+        "reason": "Starts at section beginning with the core 15% MLM definition, but ends mid-explanation ('…when the distribution of') — the sentence about dataset shift is cut off. Understandable but incomplete."
+      },
+      "strategy_B": {
+        "chunk_id": "bert_language_model_p5_para_0",
+        "chunk_chars": 214,
+        "score": 1,
+        "reason": "Only 214 chars — contains the opening rule (15% randomly selected) but ends abruptly before the actual three masking options. Requires the next chunk to understand fully."
+      },
+      "strategy_C": {
+        "chunk_id": "bert_language_model_p5_para_0",
+        "chunk_chars": 214,
+        "score": 1,
+        "reason": "Same as B — the section's bullet list structure creates a very short chunk that lacks completeness."
+      }
+    },
+    {
+      "position_id": "P3",
+      "document_id": "transformer_deep_learning",
+      "section_page": 0,
+      "section_title": "Introduction",
+      "section_chars": 1723,
+      "strategy_A": {
+        "chunk_id": "transformer_deep_learning_p0_fixed_0",
+        "chunk_chars": 500,
+        "score": 2,
+        "reason": "Covers the opening definition (multi-head attention, tokens, context window). Self-contained sentence explaining what a transformer is."
+      },
+      "strategy_B": {
+        "chunk_id": "transformer_deep_learning_p0_para_0",
+        "chunk_chars": 599,
+        "score": 2,
+        "reason": "Full first paragraph (definition + mechanism). Self-contained and coherent."
+      },
+      "strategy_C": {
+        "chunk_id": "transformer_deep_learning_p0_para_0",
+        "chunk_chars": 599,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P4",
+      "document_id": "transformer_deep_learning",
+      "section_page": 19,
+      "section_title": "Multihead attention",
+      "section_chars": 2113,
+      "strategy_A": {
+        "chunk_id": "transformer_deep_learning_p19_fixed_0",
+        "chunk_chars": 500,
+        "score": 1,
+        "reason": "Starts at section beginning with the definition of an attention head. Ends mid-sentence about WQ/WK/WV matrices — the mathematical explanation is cut before it is complete. Understandable in isolation but needs the next chunk for the full formulation."
+      },
+      "strategy_B": {
+        "chunk_id": "transformer_deep_learning_p19_para_0",
+        "chunk_chars": 799,
+        "score": 2,
+        "reason": "Paragraph boundary preserved. Contains the complete conceptual explanation (why multiple heads with different definitions of relevance). Mathematical details follow in the next chunk but this one is self-contained conceptually."
+      },
+      "strategy_C": {
+        "chunk_id": "transformer_deep_learning_p19_para_0",
+        "chunk_chars": 799,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P5",
+      "document_id": "natural_language_processing",
+      "section_page": 14,
+      "section_title": "Higher-level NLP applications",
+      "section_chars": 4082,
+      "strategy_A": {
+        "chunk_id": "natural_language_processing_p14_fixed_0",
+        "chunk_chars": 500,
+        "score": 1,
+        "reason": "Starts with 'Automatic summarization' header and covers the first two applications. Ends mid-sentence in the grammatical error correction explanation. The structure is a list; cutting mid-entry breaks coherence."
+      },
+      "strategy_B": {
+        "chunk_id": "natural_language_processing_p14_para_0",
+        "chunk_chars": 647,
+        "score": 2,
+        "reason": "Paragraph boundary preserved. Covers the first two applications (summarization and grammatical error correction) completely. Self-contained."
+      },
+      "strategy_C": {
+        "chunk_id": "natural_language_processing_p14_para_0",
+        "chunk_chars": 647,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P6",
+      "document_id": "word_embedding",
+      "section_page": 1,
+      "section_title": "Development and history of the approach",
+      "section_chars": 3438,
+      "strategy_A": {
+        "chunk_id": "word_embedding_p1_fixed_0",
+        "chunk_chars": 499,
+        "score": 2,
+        "reason": "Starts with the section beginning (distributional semantics background). Ends mid-sentence ('proposed in a 1957 article by…') but conveys the main idea about origins. The core idea about Firth's principle is introduced."
+      },
+      "strategy_B": {
+        "chunk_id": "word_embedding_p1_para_0",
+        "chunk_chars": 612,
+        "score": 2,
+        "reason": "Full first paragraph — covers the foundational idea and Firth's 1957 principle. Self-contained."
+      },
+      "strategy_C": {
+        "chunk_id": "word_embedding_p1_para_0",
+        "chunk_chars": 612,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P7",
+      "document_id": "large_language_model",
+      "section_page": 1,
+      "section_title": "History",
+      "section_chars": 3980,
+      "strategy_A": {
+        "chunk_id": "large_language_model_p1_fixed_0",
+        "chunk_chars": 500,
+        "score": 2,
+        "reason": "Covers the pre-transformer history (IBM 1990s, n-gram 2001). Ends mid-sentence ('…rise of widespread internet access, researche…') but the narrative about early LLMs is established."
+      },
+      "strategy_B": {
+        "chunk_id": "large_language_model_p1_para_0",
+        "chunk_chars": 679,
+        "score": 2,
+        "reason": "Full first paragraph — pre-2017 history ending at the transition to neural models. Self-contained chronological unit."
+      },
+      "strategy_C": {
+        "chunk_id": "large_language_model_p1_para_0",
+        "chunk_chars": 679,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P8",
+      "document_id": "vector_database",
+      "section_page": 0,
+      "section_title": "Introduction",
+      "section_chars": 1461,
+      "strategy_A": {
+        "chunk_id": "vector_database_p0_fixed_0",
+        "chunk_chars": 500,
+        "score": 2,
+        "reason": "Starts at section beginning. Covers the definition and use-cases list. Ends mid-sentence mid-list but the main definition is complete."
+      },
+      "strategy_B": {
+        "chunk_id": "vector_database_p0_para_0",
+        "chunk_chars": 624,
+        "score": 2,
+        "reason": "Full first paragraph — covers definition, ANN algorithm, use cases, and embedding representation. Self-contained."
+      },
+      "strategy_C": {
+        "chunk_id": "vector_database_p0_para_0",
+        "chunk_chars": 624,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P9",
+      "document_id": "information_retrieval",
+      "section_page": 2,
+      "section_title": "History",
+      "section_chars": 5309,
+      "strategy_A": {
+        "chunk_id": "information_retrieval_p2_fixed_0",
+        "chunk_chars": 500,
+        "score": 0,
+        "reason": "Starts mid-sentence with a quote fragment ('there is ... a machine called the Univac ...') with no context about who is speaking or when. The subject is never established. Cannot be understood standalone."
+      },
+      "strategy_B": {
+        "chunk_id": "information_retrieval_p2_para_0",
+        "chunk_chars": 693,
+        "score": 2,
+        "reason": "Paragraph boundary preserved. Opens with the Univac quote as a historical reference, then contextualises it with Vannevar Bush 1945 and Emanuel Goldberg's patents. Self-contained historical unit."
+      },
+      "strategy_C": {
+        "chunk_id": "information_retrieval_p2_para_0",
+        "chunk_chars": 693,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    },
+    {
+      "position_id": "P10",
+      "document_id": "attention_machine_learning",
+      "section_page": 0,
+      "section_title": "Introduction",
+      "section_chars": 1326,
+      "strategy_A": {
+        "chunk_id": "attention_machine_learning_p0_fixed_0",
+        "chunk_chars": 500,
+        "score": 2,
+        "reason": "Starts at section beginning. Covers the full definition of attention and the contrast between RNN and transformer approaches. Ends mid-sentence ('Earlier designs implemented…serial rec…') but the core concept is fully stated."
+      },
+      "strategy_B": {
+        "chunk_id": "attention_machine_learning_p0_para_0",
+        "chunk_chars": 779,
+        "score": 2,
+        "reason": "Full first paragraph — covers definition, typical NLP weighting, and the transformer's replacement of RNN. Self-contained."
+      },
+      "strategy_C": {
+        "chunk_id": "attention_machine_learning_p0_para_0",
+        "chunk_chars": 779,
+        "score": 2,
+        "reason": "Same as B."
+      }
+    }
+  ],
+  "summary": {
+    "strategy_A_scores": [2, 1, 2, 1, 1, 2, 2, 2, 0, 2],
+    "strategy_A_avg": 1.5,
+    "strategy_B_scores": [2, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+    "strategy_B_avg": 1.9,
+    "strategy_C_scores": [2, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+    "strategy_C_avg": 1.9,
+    "key_finding": "Strategy A scores lower (avg 1.5/2) because fixed-size cuts create mid-sentence boundaries (P2, P4, P5) and can fragment a section starting mid-quote with no context (P9: score 0). Strategies B and C use paragraph boundaries and score higher (avg 1.9/2). The exception is P2 (BERT MLM) where bullet-list structure creates a very short first paragraph that is itself incomplete."
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "audit_note": "Manual metadata audit: 5 test questions × top-3 chunks × strategy A. Fields checked: document_id (source), page (section index), topic_category, source URL. Auditor: Hoàng Minh Huy (author — conflict of interest noted).",
+  "strategy_audited": "A",
+  "total_records_checked": 15,
+  "questions": [
+    {
+      "question_id": "q16",
+      "question": "How does the encoder component work in a Transformer model?",
+      "filter": {"topic_category": "model"},
+      "hits": [
+        {
+          "rank": 1,
+          "document_id": "transformer_deep_learning",
+          "page": "16",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Transformer_%28deep_learning%29",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields present and accurate. Source URL matches Wikipedia article. topic_category=model is correct."
+        },
+        {
+          "rank": 2,
+          "document_id": "transformer_deep_learning",
+          "page": "25",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Transformer_%28deep_learning%29",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        },
+        {
+          "rank": 3,
+          "document_id": "transformer_deep_learning",
+          "page": "11",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Transformer_%28deep_learning%29",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        }
+      ],
+      "records_complete_and_correct": 3,
+      "filter_compliance": "3/3 chunks have topic_category=model, matching the applied filter",
+      "limitation": "Gold page was p21; retriever returned p16, p25, p11 — correct metadata but wrong section. Metadata does not guarantee retrieval correctness."
+    },
+    {
+      "question_id": "q17",
+      "question": "What are the challenges of Retrieval-Augmented Generation?",
+      "filter": {"topic_category": "retrieval"},
+      "hits": [
+        {
+          "rank": 1,
+          "document_id": "retrieval-augmented_generation",
+          "page": "4",
+          "topic_category": "retrieval",
+          "source": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct. topic_category=retrieval matches filter."
+        },
+        {
+          "rank": 2,
+          "document_id": "retrieval-augmented_generation",
+          "page": "2",
+          "topic_category": "retrieval",
+          "source": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        },
+        {
+          "rank": 3,
+          "document_id": "large_language_model",
+          "page": "19",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Large_language_model",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "Strategy A (no filter) returns this. topic_category=model is correct for the LLM article. For strategy C (with filter=retrieval), this chunk would have been excluded."
+        }
+      ],
+      "records_complete_and_correct": 3,
+      "filter_compliance": "2/3 chunks have topic_category=retrieval (strategy A has no filter; strategy C would score 3/3)",
+      "limitation": "Strategy A does not apply filter; rank 3 from LLM article has topic_category=model. This demonstrates why filter (strategy C) is valuable for category-scoped questions."
+    },
+    {
+      "question_id": "q18",
+      "question": "What NLP tasks involve text and speech processing?",
+      "filter": {"topic_category": "language_processing"},
+      "hits": [
+        {
+          "rank": 1,
+          "document_id": "natural_language_processing",
+          "page": "8",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Natural_language_processing",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "Hit at rank 1. All fields correct."
+        },
+        {
+          "rank": 2,
+          "document_id": "natural_language_processing",
+          "page": "0",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Natural_language_processing",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        },
+        {
+          "rank": 3,
+          "document_id": "natural_language_processing",
+          "page": "16",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Natural_language_processing",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        }
+      ],
+      "records_complete_and_correct": 3,
+      "filter_compliance": "3/3 chunks have topic_category=language_processing",
+      "limitation": "None — metadata is complete and correct for all 3 ranks."
+    },
+    {
+      "question_id": "q19",
+      "question": "What are hallucinations in large language models?",
+      "filter": null,
+      "hits": [
+        {
+          "rank": 1,
+          "document_id": "large_language_model",
+          "page": "35",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Large_language_model",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "Hit at rank 1. page=35 is the Hallucinations section. Correct."
+        },
+        {
+          "rank": 2,
+          "document_id": "large_language_model",
+          "page": "29",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Large_language_model",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        },
+        {
+          "rank": 3,
+          "document_id": "large_language_model",
+          "page": "0",
+          "topic_category": "model",
+          "source": "https://en.wikipedia.org/wiki/Large_language_model",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        }
+      ],
+      "records_complete_and_correct": 3,
+      "filter_compliance": "N/A — no filter for this question",
+      "limitation": "None — metadata is complete and correct. page field correctly identifies section index."
+    },
+    {
+      "question_id": "q20",
+      "question": "What is the development history of word embeddings and what approach did Word2Vec introduce?",
+      "filter": null,
+      "hits": [
+        {
+          "rank": 1,
+          "document_id": "word_embedding",
+          "page": "1",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Word_embedding",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "Hit at rank 1. page=1 is the history section. Correct."
+        },
+        {
+          "rank": 2,
+          "document_id": "natural_language_processing",
+          "page": "3",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Natural_language_processing",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct. This is the NLP article's Statistical NLP section which also discusses Word2Vec — cross-article retrieval is correct behavior."
+        },
+        {
+          "rank": 3,
+          "document_id": "word_embedding",
+          "page": "6",
+          "topic_category": "language_processing",
+          "source": "https://en.wikipedia.org/wiki/Word_embedding",
+          "metadata_complete": true,
+          "metadata_correct": true,
+          "note": "All fields correct."
+        }
+      ],
+      "records_complete_and_correct": 3,
+      "filter_compliance": "N/A — no filter",
+      "limitation": "None — metadata complete and correct."
+    }
+  ],
+  "summary": {
+    "total_records": 15,
+    "complete_and_correct": 15,
+    "compliance_rate": "15/15 (100%)",
+    "filter_compliance_for_filter_questions": "q16: 3/3, q17 (strategy A): 2/3 (expected — strategy A has no filter), q18: 3/3",
+    "key_finding": "All 15 metadata records are complete and correct: document_id, page, source URL, and topic_category are accurate. The page field (section index) correctly identifies which Wikipedia section each chunk came from. The usefulness of topic_category for filtering is demonstrated in q17 (strategy C would exclude the off-category LLM chunk at rank 3) and q18 (all 3 results correctly scoped to language_processing).",
+    "one_limitation": "The source URL contains URL-encoded parentheses (e.g., %28, %29) for articles like 'BERT (language model)' — this is correct but requires awareness when using the source field for direct linking."
+  }
+}

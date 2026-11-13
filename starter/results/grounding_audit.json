@@ -1,0 +1,87 @@
+{
+  "audit_note": "Manual grounding quality audit: 5 test questions (q16–q20), strategy A top-3 hits. Evaluates whether retrieved evidence is sufficient to answer the question and traceable to source. Scale: 0=no evidence; 1=evidence present but missing key conditions/context to fully answer; 2=sufficient evidence to answer and trace source. Auditor: Hoàng Minh Huy (author — self-labeling bias acknowledged).",
+  "strategy": "A",
+  "questions": [
+    {
+      "question_id": "q16",
+      "question": "How does the encoder component work in a Transformer model?",
+      "gold_page": 21,
+      "hit_at_3": false,
+      "top3_summary": {
+        "r1": "transformer_deep_learning p16 — encoder-decoder overview: 'The encoder consists of encoding layers that process all the input tokens together one layer after another'",
+        "r2": "transformer_deep_learning p25 — architecture variations: mentions encoder-only transformers used for text classification",
+        "r3": "transformer_deep_learning p11 — components list: mentions tokenizer, embedding, attention layers"
+      },
+      "grounding_score": 1,
+      "reason": "Rank 1 (p16) gives a correct high-level description of the encoder (encoding layers, processes all tokens together). However, the detailed mechanism — self-attention + feed-forward sublayers per layer, the matrix formulation — is in p21 (not retrieved). The retrieved evidence is sufficient for a general answer but missing the key technical detail of how each encoder layer is internally structured. Score: 1 (partial — answers 'what it does' but not 'how it works' mechanistically).",
+      "source_traceable": true,
+      "source_ref": "https://en.wikipedia.org/wiki/Transformer_(deep_learning), section 'Encoder–decoder (overview)'"
+    },
+    {
+      "question_id": "q17",
+      "question": "What are the challenges of Retrieval-Augmented Generation?",
+      "gold_page": 9,
+      "hit_at_3": false,
+      "top3_summary": {
+        "r1": "retrieval-augmented_generation p4 — Applications: discusses healthcare and other use cases, not challenges",
+        "r2": "retrieval-augmented_generation p2 — Process: explains how RAG works, not its challenges",
+        "r3": "large_language_model p19 — LLM article's RAG section: explains what RAG is"
+      },
+      "grounding_score": 0,
+      "reason": "None of the top-3 chunks are from the Challenges section (p9). The retrieved content describes RAG's applications and process, not its limitations. The question specifically asks about challenges (retrieval quality, hallucination persistence, context misinterpretation, computational cost). No evidence for a correct answer to this specific question is present in the top-3. Score: 0.",
+      "source_traceable": false,
+      "source_ref": "Should be: https://en.wikipedia.org/wiki/Retrieval-augmented_generation, section 'Challenges'"
+    },
+    {
+      "question_id": "q18",
+      "question": "What NLP tasks involve text and speech processing such as tokenization and sentence segmentation?",
+      "gold_page": 8,
+      "hit_at_3": true,
+      "top3_summary": {
+        "r1": "natural_language_processing p8 — Text and speech processing section: speech segmentation, word tokenization, sentence segmentation listed",
+        "r2": "natural_language_processing p0 — NLP intro",
+        "r3": "natural_language_processing p16 — Cognition section"
+      },
+      "grounding_score": 2,
+      "reason": "Rank 1 (p8) contains the exact section with speech recognition, speech segmentation, word tokenization, sentence segmentation, and related tasks. The evidence is sufficient and direct. The question is answered with the full enumeration of tasks from the right section. Source is traceable. Score: 2.",
+      "source_traceable": true,
+      "source_ref": "https://en.wikipedia.org/wiki/Natural_language_processing, section 'Text and speech processing'"
+    },
+    {
+      "question_id": "q19",
+      "question": "What are hallucinations in large language models?",
+      "gold_page": 35,
+      "hit_at_3": true,
+      "top3_summary": {
+        "r1": "large_language_model p35 — Hallucinations: 'models generate syntactically fluent text that appears factually sound, but is internally inconsistent with training data or factually incorrect'",
+        "r2": "large_language_model p29 — Understanding section: mentions hallucination as a term",
+        "r3": "large_language_model p0 — LLM intro"
+      },
+      "grounding_score": 2,
+      "reason": "Rank 1 (p35) is the Hallucinations section itself. It provides a complete, accurate definition: fluent text that is inconsistent with training data or factually incorrect, arising partly from memorization combined with extrapolation. This is fully sufficient to answer the question. Source directly traceable. Score: 2.",
+      "source_traceable": true,
+      "source_ref": "https://en.wikipedia.org/wiki/Large_language_model, section 'Hallucinations'"
+    },
+    {
+      "question_id": "q20",
+      "question": "What is the development history of word embeddings and what approach did Word2Vec introduce?",
+      "gold_page": 1,
+      "hit_at_3": true,
+      "top3_summary": {
+        "r1": "word_embedding p1 — History: mentions theoretical advances in 2010, Word2vec by Mikolov in 2013, training vector space models",
+        "r2": "natural_language_processing p3 — NLP Statistical NLP section: mentions Mikolov's Word2vec development",
+        "r3": "word_embedding p6 — Software section: lists Word2vec, GloVe, etc."
+      },
+      "grounding_score": 2,
+      "reason": "Rank 1 (word_embedding p1) contains Word2Vec's creation by Mikolov in 2013 at Google and the broader history of word embedding development. Rank 2 adds corroborating context from the NLP article. Together (and rank 1 alone) provides sufficient evidence for the question. The historical progression and Word2Vec's role are traceable. Score: 2.",
+      "source_traceable": true,
+      "source_ref": "https://en.wikipedia.org/wiki/Word_embedding, section 'Development and history of the approach'"
+    }
+  ],
+  "summary": {
+    "scores": {"q16": 1, "q17": 0, "q18": 2, "q19": 2, "q20": 2},
+    "score_distribution": {"0": 1, "1": 1, "2": 3},
+    "average": 1.4,
+    "note": "Average grounding /2 = 1.4. q17 scores 0 because the challenges section was not retrieved (rank 3 goes to LLM article rather than RAG p9). q16 scores 1 because encoder overview was retrieved but not the detailed per-layer mechanism. This aligns with the retrieval miss: the gold section (p21) was not in top-3."
+  }
+}

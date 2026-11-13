@@ -1,0 +1,8 @@
+# Core setup and PDF parsing. Choose and install an embedding SDK separately.
+psycopg[binary]==3.3.8
+pypdf>=5,<7
+python-dotenv>=1,<2
+
+# Day 06 pipeline dependencies (added for ChromaDB + fastembed implementation)
+chromadb==0.6.3
+fastembed==0.4.2

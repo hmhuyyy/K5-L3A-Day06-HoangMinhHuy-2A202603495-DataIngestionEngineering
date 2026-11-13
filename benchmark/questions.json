@@ -1,0 +1,222 @@
+[
+  {
+    "id": "q01",
+    "split": "dev",
+    "type": "direct",
+    "question": "What is Retrieval-Augmented Generation (RAG) and what does it enable LLMs to do?",
+    "expected_answer": "RAG is a technique that enables large language models to retrieve and incorporate new information from external data sources, allowing them to use domain-specific or updated information not in their training data.",
+    "gold_source_ids": ["retrieval-augmented_generation"],
+    "gold_pages": [0],
+    "evidence_quotes": ["enables large language models (LLMs) to retrieve and incorporate new information from external data sources"],
+    "filter": null
+  },
+  {
+    "id": "q02",
+    "split": "dev",
+    "type": "direct",
+    "question": "What LLM problem does RAG help reduce, and what is an example given?",
+    "expected_answer": "RAG can reduce factual errors (hallucinations). An example is Google Bard providing incorrect information about the James Webb Space Telescope.",
+    "gold_source_ids": ["retrieval-augmented_generation"],
+    "gold_pages": [1],
+    "evidence_quotes": ["RAG can reduce factual errors"],
+    "filter": null
+  },
+  {
+    "id": "q03",
+    "split": "dev",
+    "type": "direct",
+    "question": "What does BERT stand for and what architecture does it use?",
+    "expected_answer": "BERT stands for Bidirectional Encoder Representations from Transformers. It uses the encoder-only transformer architecture.",
+    "gold_source_ids": ["bert_language_model"],
+    "gold_pages": [0],
+    "evidence_quotes": ["Bidirectional encoder representations from transformers (BERT)"],
+    "filter": null
+  },
+  {
+    "id": "q04",
+    "split": "dev",
+    "type": "direct",
+    "question": "How does masked language modeling work in BERT pre-training?",
+    "expected_answer": "In MLM, 15% of tokens are randomly selected. Of these, 80% are replaced with [MASK], 10% with a random word, and 10% are unchanged. The model learns to predict the masked token from context.",
+    "gold_source_ids": ["bert_language_model"],
+    "gold_pages": [5],
+    "evidence_quotes": ["15% of tokens would be randomly selected for masked-prediction task"],
+    "filter": null
+  },
+  {
+    "id": "q05",
+    "split": "dev",
+    "type": "direct",
+    "question": "What is the Transformer architecture based on?",
+    "expected_answer": "The Transformer is a family of neural network architectures based on the multi-head attention mechanism, where input data is converted to tokens and each token is contextualised via parallel multi-head attention.",
+    "gold_source_ids": ["transformer_deep_learning"],
+    "gold_pages": [0],
+    "evidence_quotes": ["based on the multi-head attention mechanism"],
+    "filter": null
+  },
+  {
+    "id": "q06",
+    "split": "dev",
+    "type": "direct",
+    "question": "What is positional encoding in Transformers and what does the original paper use?",
+    "expected_answer": "Positional encoding supplies information about token position or order. The original Transformer added fixed sinusoidal position encodings to token embeddings.",
+    "gold_source_ids": ["transformer_deep_learning"],
+    "gold_pages": [15],
+    "evidence_quotes": ["positional encoding or embedding supplies information about token position or order"],
+    "filter": null
+  },
+  {
+    "id": "q07",
+    "split": "dev",
+    "type": "direct",
+    "question": "What is a vector database and what algorithms does it typically implement?",
+    "expected_answer": "A vector database stores and retrieves embeddings in vector space. It typically implements approximate nearest neighbor algorithms for semantic similarity search.",
+    "gold_source_ids": ["vector_database"],
+    "gold_pages": [0],
+    "evidence_quotes": ["stores and retrieves embeddings of data in vector space"],
+    "filter": null
+  },
+  {
+    "id": "q08",
+    "split": "dev",
+    "type": "direct",
+    "question": "How is a vector database used in a Retrieval-Augmented Generation system?",
+    "expected_answer": "Documents are encoded as embeddings and stored in a vector database. For a user prompt, its embedding is computed and the database is queried to retrieve the most relevant documents, which are then passed to the LLM.",
+    "gold_source_ids": ["vector_database"],
+    "gold_pages": [3],
+    "evidence_quotes": ["An especially common use-case for vector databases is in retrieval-augmented generation"],
+    "filter": null
+  },
+  {
+    "id": "q09",
+    "split": "dev",
+    "type": "paraphrase",
+    "question": "Why can RAG still produce misinformation even when pulling from factually correct sources?",
+    "expected_answer": "LLMs can generate misinformation even from correct sources if they misinterpret the context.",
+    "gold_source_ids": ["retrieval-augmented_generation"],
+    "gold_pages": [1],
+    "evidence_quotes": ["LLMs can generate misinformation even when pulling from factually correct sources if they misinterpret the context"],
+    "filter": null
+  },
+  {
+    "id": "q10",
+    "split": "dev",
+    "type": "direct",
+    "question": "How does attention work in machine learning?",
+    "expected_answer": "Attention is a method that determines the importance of each component in a sequence relative to other components, assigning weights to each element. In NLP, it assigns weights to words in a sentence.",
+    "gold_source_ids": ["attention_machine_learning"],
+    "gold_pages": [0],
+    "evidence_quotes": ["determines the importance of, or \"attends to\", each component in a sequence"],
+    "filter": null
+  },
+  {
+    "id": "q11",
+    "split": "dev",
+    "type": "direct",
+    "question": "How does multi-head attention work and what does each attention head do?",
+    "expected_answer": "Each attention head attends to tokens relevant to each token with a different definition of relevance. Multiple heads allow the model to attend to different aspects simultaneously. The query and key projection matrices define relevance.",
+    "gold_source_ids": ["transformer_deep_learning"],
+    "gold_pages": [19],
+    "evidence_quotes": ["multiple attention heads allow the model to do this for different definitions of \"relevance\""],
+    "filter": null
+  },
+  {
+    "id": "q12",
+    "split": "dev",
+    "type": "direct",
+    "question": "What are higher-level NLP applications according to the Natural Language Processing article?",
+    "expected_answer": "Higher-level NLP applications include automatic summarization, grammatical error correction, machine translation, question answering, text classification, and dialogue systems.",
+    "gold_source_ids": ["natural_language_processing"],
+    "gold_pages": [14],
+    "evidence_quotes": ["Automatic summarization (text summarization)"],
+    "filter": null
+  },
+  {
+    "id": "q13",
+    "split": "dev",
+    "type": "direct",
+    "question": "What is next sentence prediction (NSP) in BERT training?",
+    "expected_answer": "NSP is a pre-training task where given two sentences, the model predicts whether they appear sequentially in the training corpus, outputting [IsNext] or [NotNext].",
+    "gold_source_ids": ["bert_language_model"],
+    "gold_pages": [6],
+    "evidence_quotes": ["the model predicts if they appear sequentially in the training corpus"],
+    "filter": null
+  },
+  {
+    "id": "q14",
+    "split": "dev",
+    "type": "filter",
+    "question": "How does a vector database enable semantic search for retrieval systems?",
+    "expected_answer": "A vector database stores embeddings in high-dimensional space. Users can search for semantically similar records using approximate nearest neighbor algorithms, unlike exact-match traditional databases.",
+    "gold_source_ids": ["vector_database"],
+    "gold_pages": [0],
+    "evidence_quotes": ["search for records semantically similar to a given input, unlike traditional databases which primarily look up records by exact match"],
+    "filter": {"topic_category": "retrieval"}
+  },
+  {
+    "id": "q15",
+    "split": "dev",
+    "type": "direct",
+    "question": "What was the early history of large language models before transformers?",
+    "expected_answer": "Before transformer models in 2017, language models included IBM statistical models for machine translation in the 1990s and n-gram models trained on hundreds of millions of words in the early 2000s.",
+    "gold_source_ids": ["large_language_model"],
+    "gold_pages": [1],
+    "evidence_quotes": ["Before the emergence of transformer-based models in 2017"],
+    "filter": null
+  },
+  {
+    "id": "q16",
+    "split": "test",
+    "type": "filter",
+    "question": "How does the encoder component work in a Transformer model?",
+    "expected_answer": "An encoder consists of an embedding layer followed by multiple encoder layers. Each encoder layer has a self-attention mechanism and a feed-forward layer, taking input vectors and producing contextualised output vectors.",
+    "gold_source_ids": ["transformer_deep_learning"],
+    "gold_pages": [21],
+    "evidence_quotes": ["An encoder consists of an embedding layer, followed by multiple encoder layers"],
+    "filter": {"topic_category": "model"}
+  },
+  {
+    "id": "q17",
+    "split": "test",
+    "type": "filter",
+    "question": "What are the challenges of Retrieval-Augmented Generation?",
+    "expected_answer": "RAG faces challenges including retrieval quality, context relevance, and the risk of RAG poisoning where adversarial documents mislead the model.",
+    "gold_source_ids": ["retrieval-augmented_generation"],
+    "gold_pages": [9],
+    "evidence_quotes": ["Challenges"],
+    "filter": {"topic_category": "retrieval"}
+  },
+  {
+    "id": "q18",
+    "split": "test",
+    "type": "filter",
+    "question": "What NLP tasks involve text and speech processing such as tokenization and sentence segmentation?",
+    "expected_answer": "Text and speech processing NLP tasks include optical character recognition, speech recognition, text-to-speech, word segmentation, tokenization, and sentence segmentation.",
+    "gold_source_ids": ["natural_language_processing"],
+    "gold_pages": [8],
+    "evidence_quotes": ["Text and speech processing"],
+    "filter": {"topic_category": "language_processing"}
+  },
+  {
+    "id": "q19",
+    "split": "test",
+    "type": "direct",
+    "question": "What are hallucinations in large language models?",
+    "expected_answer": "Hallucinations are cases where LLMs generate syntactically fluent text that appears factually sound but is internally inconsistent with training data or factually incorrect.",
+    "gold_source_ids": ["large_language_model"],
+    "gold_pages": [35],
+    "evidence_quotes": ["models generate syntactically fluent text that appears factually sound, but is internally inconsistent with training data or factually incorrect"],
+    "filter": null
+  },
+  {
+    "id": "q20",
+    "split": "test",
+    "type": "direct",
+    "question": "What is the development history of word embeddings and what approach did Word2Vec introduce?",
+    "expected_answer": "Word embeddings have roots in distributional semantics from the 1950s. The idea that 'a word is characterized by the company it keeps' goes back to John Rupert Firth in 1957.",
+    "gold_source_ids": ["word_embedding"],
+    "gold_pages": [1],
+    "evidence_quotes": ["a word is characterized by the company it keeps"],
+    "filter": null
+  }
+]
