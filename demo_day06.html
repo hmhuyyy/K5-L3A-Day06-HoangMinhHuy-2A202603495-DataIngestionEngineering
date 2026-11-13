@@ -1,0 +1,750 @@
+<title>Day 06 Demo — RAG Retrieval</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap">
+
+<style>
+/* Layout: single-page terminal-style demo */
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3350;
+  --fg: #e2e8f8;
+  --fg2: #8892b0;
+  --accent: #7c8eff;
+  --accent2: #56cfb2;
+  --hit: #56cfb2;
+  --miss: #ff6b6b;
+  --warn: #ffd166;
+  --code: #a9b7ff;
+  color-scheme: dark;
+}
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f7ff;
+    --surface: #ffffff;
+    --surface2: #eef0fb;
+    --border: #d0d5f0;
+    --fg: #1a1d2e;
+    --fg2: #5c6380;
+    --accent: #4a5ff7;
+    --accent2: #0ea888;
+    --hit: #0ea888;
+    --miss: #e03c3c;
+    --warn: #c27a00;
+    --code: #3545d4;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f5f7ff;
+  --surface: #ffffff;
+  --surface2: #eef0fb;
+  --border: #d0d5f0;
+  --fg: #1a1d2e;
+  --fg2: #5c6380;
+  --accent: #4a5ff7;
+  --accent2: #0ea888;
+  --hit: #0ea888;
+  --miss: #e03c3c;
+  --warn: #c27a00;
+  --code: #3545d4;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+  --border: #2e3350; --fg: #e2e8f8; --fg2: #8892b0;
+  --accent: #7c8eff; --accent2: #56cfb2;
+  --hit: #56cfb2; --miss: #ff6b6b; --warn: #ffd166; --code: #a9b7ff;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  min-height: 100vh;
+}
+/* Header */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px max(20px, env(safe-area-inset-left, 0px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 11;
+  background: var(--surface);
+}
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.logo span { color: var(--accent2); }
+header p {
+  font-size: 12px;
+  color: var(--fg2);
+  flex: 1;
+  min-width: 0;
+}
+.theme-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--fg2);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.theme-btn:hover { color: var(--fg); border-color: var(--accent); }
+
+/* Main layout */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-block: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Strategy switcher */
+.strategy-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.strat-btn {
+  padding: 7px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.strat-btn:hover { border-color: var(--accent); color: var(--fg); }
+.strat-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Stats bar */
+.stats-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  flex: 1;
+  min-width: 120px;
+}
+.stat-label { font-size: 11px; color: var(--fg2); text-transform: uppercase; letter-spacing: 0.08em; }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.stat-sub { font-size: 11px; color: var(--fg2); }
+
+/* Search box */
+.search-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.search-label { font-size: 12px; color: var(--fg2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--fg);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--fg2); }
+.filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.filter-label { font-size: 12px; color: var(--fg2); }
+.filter-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--fg);
+  font-size: 13px;
+  outline: none;
+}
+.search-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.search-btn:hover { opacity: 0.88; }
+.search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Quick questions */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--fg2);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.chip:hover { border-color: var(--accent); color: var(--fg); }
+
+/* Results */
+.results-block { display: flex; flex-direction: column; gap: 10px; }
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.result-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rank-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: var(--fg2);
+  white-space: nowrap;
+}
+.hit-badge {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.hit-yes { background: color-mix(in srgb, var(--hit) 15%, transparent); color: var(--hit); border: 1px solid color-mix(in srgb, var(--hit) 30%, transparent); }
+.hit-no  { background: color-mix(in srgb, var(--miss) 10%, transparent); color: var(--miss); border: 1px solid color-mix(in srgb, var(--miss) 20%, transparent); }
+.score-bar-wrap { flex: 1; min-width: 80px; max-width: 140px; }
+.score-bar-bg { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+.score-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+.meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.meta-pill {
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--fg2);
+  font-family: 'JetBrains Mono', monospace;
+}
+.meta-pill b { color: var(--code); font-weight: 600; }
+.chunk-text {
+  font-size: 13px;
+  color: var(--fg);
+  line-height: 1.65;
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+}
+.chunk-text mark {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Empty / loading state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--fg2);
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+.empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Comparison mode */
+.compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 680px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-col { display: flex; flex-direction: column; gap: 6px; }
+.compare-col h4 { font-size: 12px; font-weight: 600; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+.compare-chunk {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--fg);
+  line-height: 1.6;
+  position: relative;
+}
+.compare-chunk.is-hit { border-color: color-mix(in srgb, var(--hit) 40%, transparent); }
+.compare-chunk .chunk-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg2);
+  margin-bottom: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.section-title {
+  font-size: 11px;
+  color: var(--accent2);
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+
+<header>
+  <div class="logo">Day06 · <span>RAG Demo</span></div>
+  <p>Wikipedia AI/ML corpus · 176 sections · fastembed BGE-small-en-v1.5 · Qdrant local</p>
+  <button class="theme-btn" onclick="toggleTheme()">🌙 Theme</button>
+</header>
+
+<main>
+  <!-- Strategy selector -->
+  <div>
+    <div class="search-label" style="margin-bottom:8px">Chiến lược</div>
+    <div class="strategy-bar">
+      <button class="strat-btn active" onclick="setStrategy('A',this)">A — Fixed 500/50</button>
+      <button class="strat-btn" onclick="setStrategy('B',this)">B — Paragraph 800</button>
+      <button class="strat-btn" onclick="setStrategy('C',this)">C — Para + Filter</button>
+      <button class="strat-btn" onclick="setStrategy('compare',this)">🔀 So sánh A/B/C</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-label">Chunks</div>
+      <div class="stat-value" id="statChunks">518</div>
+      <div class="stat-sub">fixed 500/50</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Hit@1 dev</div>
+      <div class="stat-value" id="statH1">47%</div>
+      <div class="stat-sub">7/15</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Hit@3 dev</div>
+      <div class="stat-value" id="statH3">87%</div>
+      <div class="stat-sub">13/15</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Coherence</div>
+      <div class="stat-value" id="statCoh" style="color:var(--warn)">1.5/2</div>
+      <div class="stat-sub">avg 10 positions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Embed model</div>
+      <div class="stat-value" style="font-size:12px;line-height:1.4;padding-top:4px;color:var(--accent2)">BGE</div>
+      <div class="stat-sub">384d · local · free</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-block">
+    <div class="search-label">Truy vấn</div>
+    <div class="search-row">
+      <input class="search-input" id="queryInput" type="text"
+        placeholder="Ví dụ: What is BERT and what architecture does it use?"
+        onkeydown="if(event.key==='Enter')runSearch()">
+      <button class="search-btn" id="searchBtn" onclick="runSearch()">🔍 Tìm</button>
+    </div>
+    <div class="filter-row" id="filterRow" style="display:none">
+      <span class="filter-label">Filter topic_category:</span>
+      <select class="filter-select" id="filterSelect">
+        <option value="">— không filter —</option>
+        <option value="retrieval">retrieval</option>
+        <option value="model">model</option>
+        <option value="language_processing">language_processing</option>
+      </select>
+    </div>
+    <div>
+      <div class="filter-label" style="margin-bottom:6px">Câu hỏi mẫu từ benchmark:</div>
+      <div class="chips" id="chipsContainer"></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsContainer">
+    <div class="empty-state">
+      <div class="icon">🔎</div>
+      Chọn câu hỏi mẫu hoặc gõ truy vấn rồi nhấn Tìm
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+const STRATEGIES = {
+  A: { label: "Fixed 500/50",     chunks: 518, h1: "47%", h3: "87%", h1n: "7/15", h3n: "13/15", coh: "1.5/2" },
+  B: { label: "Paragraph 800",    chunks: 370, h1: "27%", h3: "80%", h1n: "4/15", h3n: "12/15", coh: "1.9/2" },
+  C: { label: "Para + Filter",    chunks: 370, h1: "27%", h3: "80%", h1n: "4/15", h3n: "12/15", coh: "1.9/2" },
+};
+
+// Pre-loaded sample results (excerpted from actual traces.json)
+const SAMPLE_DATA = {
+  "q01": {
+    question: "What is Retrieval-Augmented Generation (RAG)?",
+    A: [
+      { rank:1, score:0.937, doc:"retrieval-augmented_generation", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources. With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data. This allows LLMs to use domain-specific and/or updated information not available in the training data." },
+      { rank:2, score:0.933, doc:"large_language_model", page:"19", section:"Retrieval-augmented generation", cat:"model", isHit:false,
+        text:"Retrieval-augmented generation (RAG) is an approach that integrates LLMs with document retrieval systems. Given a query, a document retriever is called to retrieve the most relevant documents. This is usually done by encoding the query and the documents into vectors, then finding the documents with vectors (usually stored in a vector database) most similar to the vector of the query." },
+      { rank:3, score:0.913, doc:"retrieval-augmented_generation", page:"2", section:"Process", cat:"retrieval", isHit:false,
+        text:"Retrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set." },
+    ],
+    B: [
+      { rank:1, score:0.932, doc:"large_language_model", page:"19", section:"Retrieval-augmented generation", cat:"model", isHit:false,
+        text:"Retrieval-augmented generation (RAG) is an approach that integrates LLMs with document retrieval systems. Given a query, a document retriever is called to retrieve the most relevant documents." },
+      { rank:2, score:0.921, doc:"retrieval-augmented_generation", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources. With RAG, LLMs first refer to a specified set of documents, then respond to user queries." },
+      { rank:3, score:0.919, doc:"retrieval-augmented_generation", page:"2", section:"Process", cat:"retrieval", isHit:false,
+        text:"Retrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism." },
+    ],
+    C: [
+      { rank:1, score:0.921, doc:"retrieval-augmented_generation", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources. With RAG, LLMs first refer to a specified set of documents, then respond to user queries." },
+      { rank:2, score:0.919, doc:"retrieval-augmented_generation", page:"2", section:"Process", cat:"retrieval", isHit:false,
+        text:"RAG enhances LLMs by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set." },
+      { rank:3, score:0.909, doc:"vector_database", page:"3", section:"Retrieval-augmented generation", cat:"retrieval", isHit:false,
+        text:"An especially common use-case for vector databases is in retrieval-augmented generation (RAG), a method to improve domain-specific responses of large language models." },
+    ],
+  },
+  "q03": {
+    question: "What does BERT stand for and what architecture does it use?",
+    A: [
+      { rank:1, score:0.762, doc:"bert_language_model", page:"1", section:"Architecture", cat:"model", isHit:false,
+        text:"BERT is an \"encoder-only\" transformer architecture. At a high level, BERT consists of 4 modules: Tokenizer, Embedding, Encoder stack, and an output head." },
+      { rank:2, score:0.761, doc:"bert_language_model", page:"10", section:"History", cat:"model", isHit:false,
+        text:"BERT was originally published by Google researchers Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Unlike previous models, BERT is a deeply bidirectional, unsupervised language representation." },
+      { rank:3, score:0.753, doc:"bert_language_model", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"Bidirectional encoder representations from transformers (BERT) is a language model introduced in October 2018 by researchers at Google. It learns to represent text as a sequence of vectors using self-supervised learning. It uses the encoder-only transformer architecture." },
+    ],
+    B: [
+      { rank:1, score:0.776, doc:"bert_language_model", page:"1", section:"Architecture", cat:"model", isHit:false,
+        text:"BERT is an \"encoder-only\" transformer architecture. At a high level, BERT consists of 4 modules." },
+      { rank:2, score:0.768, doc:"bert_language_model", page:"10", section:"History", cat:"model", isHit:false,
+        text:"BERT was originally published by Google researchers in 2018. Unlike previous models, BERT is a deeply bidirectional, unsupervised language representation." },
+      { rank:3, score:0.747, doc:"bert_language_model", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"Bidirectional encoder representations from transformers (BERT) is a language model introduced in October 2018 by researchers at Google. It uses the encoder-only transformer architecture." },
+    ],
+    C: [
+      { rank:1, score:0.776, doc:"bert_language_model", page:"1", section:"Architecture", cat:"model", isHit:false,
+        text:"BERT is an \"encoder-only\" transformer architecture. At a high level, BERT consists of 4 modules." },
+      { rank:2, score:0.768, doc:"bert_language_model", page:"10", section:"History", cat:"model", isHit:false,
+        text:"BERT was originally published by Google researchers in 2018." },
+      { rank:3, score:0.747, doc:"bert_language_model", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"Bidirectional encoder representations from transformers (BERT) is a language model introduced in October 2018 by researchers at Google. It uses the encoder-only transformer architecture." },
+    ],
+  },
+  "q05": {
+    question: "What is the Transformer architecture based on?",
+    A: [
+      { rank:1, score:0.837, doc:"transformer_deep_learning", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"In deep learning, the transformer is a family of artificial neural network architectures based on the multi-head attention mechanism, in which input data such as text, images, or audio is converted to a sequence of numerical representations called tokens." },
+      { rank:2, score:0.802, doc:"transformer_deep_learning", page:"11", section:"Architecture", cat:"model", isHit:false,
+        text:"Transformer architectures vary, but many include some of the following components: A tokenizer, embedding layer, positional encoding, attention layers, and feed-forward networks." },
+      { rank:3, score:0.796, doc:"attention_machine_learning", page:"3", section:"Transformer", cat:"model", isHit:false,
+        text:"The transformer is an example of a deep learning model that makes use of the attention mechanism without relying on recurrent neural networks." },
+    ],
+    B: [
+      { rank:1, score:0.786, doc:"transformer_deep_learning", page:"11", section:"Architecture", cat:"model", isHit:false,
+        text:"Transformer architectures vary, but many include tokenizer, embedding, attention layers, and feed-forward network components." },
+      { rank:2, score:0.764, doc:"transformer_deep_learning", page:"30", section:"Efficient implementation", cat:"model", isHit:false,
+        text:"The transformer model has been implemented in standard deep learning frameworks such as TensorFlow and PyTorch." },
+      { rank:3, score:0.758, doc:"transformer_deep_learning", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"The transformer is a family of neural network architectures based on the multi-head attention mechanism, in which input data is converted to tokens and each token is contextualised via parallel multi-head attention." },
+    ],
+    C: [
+      { rank:1, score:0.786, doc:"transformer_deep_learning", page:"11", section:"Architecture", cat:"model", isHit:false,
+        text:"Transformer architectures vary, but many include tokenizer, embedding, attention layers, and feed-forward network components." },
+      { rank:2, score:0.758, doc:"transformer_deep_learning", page:"0", section:"Introduction", cat:"model", isHit:true,
+        text:"The transformer is a family of neural network architectures based on the multi-head attention mechanism." },
+      { rank:3, score:0.750, doc:"bert_language_model", page:"1", section:"Architecture", cat:"model", isHit:false,
+        text:"BERT is an encoder-only transformer architecture consisting of tokenizer, embedding, encoder stack, and output modules." },
+    ],
+  },
+  "q19": {
+    question: "What are hallucinations in large language models?",
+    A: [
+      { rank:1, score:0.826, doc:"large_language_model", page:"35", section:"Hallucinations", cat:"model", isHit:true,
+        text:"Hallucinations represent a fundamental challenge, wherein models generate syntactically fluent text that appears factually sound, but is internally inconsistent with training data or factually incorrect. These hallucinations arise partly through memorization of training data combined with extrapolation beyond factual boundaries." },
+      { rank:2, score:0.738, doc:"large_language_model", page:"29", section:"Understanding and intelligence", cat:"model", isHit:false,
+        text:"Generative LLMs have been observed to confidently assert claims of fact which do not seem to be justified by their training data, a phenomenon which has been termed \"hallucination\"." },
+      { rank:3, score:0.729, doc:"large_language_model", page:"0", section:"Introduction", cat:"model", isHit:false,
+        text:"LLMs can typically generate, summarize, translate, and analyze text in many contexts. They are the basis for many modern chatbots, such as ChatGPT, Claude, Gemini, and others." },
+    ],
+    B: [
+      { rank:1, score:0.826, doc:"large_language_model", page:"35", section:"Hallucinations", cat:"model", isHit:true,
+        text:"Hallucinations represent a fundamental challenge, wherein models generate syntactically fluent text that appears factually sound, but is internally inconsistent with training data or factually incorrect." },
+      { rank:2, score:0.740, doc:"large_language_model", page:"29", section:"Understanding and intelligence", cat:"model", isHit:false,
+        text:"Generative LLMs have been observed to confidently assert claims of fact which do not seem justified by their training data — a phenomenon termed 'hallucination'." },
+      { rank:3, score:0.730, doc:"large_language_model", page:"0", section:"Introduction", cat:"model", isHit:false,
+        text:"LLMs can typically generate, summarize, translate, and analyze text in many contexts." },
+    ],
+    C: [
+      { rank:1, score:0.826, doc:"large_language_model", page:"35", section:"Hallucinations", cat:"model", isHit:true,
+        text:"Hallucinations represent a fundamental challenge, wherein models generate syntactically fluent text that appears factually sound, but is internally inconsistent with training data or factually incorrect." },
+      { rank:2, score:0.740, doc:"large_language_model", page:"29", section:"Understanding and intelligence", cat:"model", isHit:false,
+        text:"Generative LLMs have been observed to confidently assert claims of fact which do not seem justified by training data — 'hallucination'." },
+      { rank:3, score:0.730, doc:"large_language_model", page:"0", section:"Introduction", cat:"model", isHit:false,
+        text:"LLMs are the basis for many modern chatbots, such as ChatGPT, Claude, Gemini." },
+    ],
+  },
+  "q07": {
+    question: "What is a vector database and what is it optimized for?",
+    A: [
+      { rank:1, score:0.896, doc:"vector_database", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"A vector database, vector store or vector search engine is a database that stores and retrieves embeddings of data in vector space. Vector databases typically implement approximate nearest neighbor algorithms so users can search for records semantically similar to a given input, unlike traditional databases which primarily look up records by exact match." },
+      { rank:2, score:0.885, doc:"vector_database", page:"3", section:"Retrieval-augmented generation", cat:"retrieval", isHit:false,
+        text:"An especially common use-case for vector databases is in retrieval-augmented generation (RAG). The retrieval component is most often implemented as a vector database." },
+      { rank:3, score:0.843, doc:"semantic_search", page:"0", section:"Introduction", cat:"retrieval", isHit:false,
+        text:"Semantic search uses meaning and context rather than exact keyword matching. It leverages embeddings in high-dimensional vector spaces." },
+    ],
+    B: [
+      { rank:1, score:0.896, doc:"vector_database", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"A vector database stores and retrieves embeddings of data in vector space. It typically implements approximate nearest neighbor algorithms for semantic similarity search, unlike traditional exact-match databases." },
+      { rank:2, score:0.885, doc:"vector_database", page:"3", section:"Retrieval-augmented generation", cat:"retrieval", isHit:false,
+        text:"An especially common use-case for vector databases is in retrieval-augmented generation (RAG)." },
+      { rank:3, score:0.843, doc:"semantic_search", page:"0", section:"Introduction", cat:"retrieval", isHit:false,
+        text:"Semantic search leverages embeddings in high-dimensional vector spaces." },
+    ],
+    C: [
+      { rank:1, score:0.896, doc:"vector_database", page:"0", section:"Introduction", cat:"retrieval", isHit:true,
+        text:"A vector database stores and retrieves embeddings of data in vector space. It typically implements approximate nearest neighbor algorithms for semantic similarity search." },
+      { rank:2, score:0.885, doc:"vector_database", page:"3", section:"Retrieval-augmented generation", cat:"retrieval", isHit:false,
+        text:"An especially common use-case for vector databases is in retrieval-augmented generation (RAG)." },
+      { rank:3, score:0.843, doc:"semantic_search", page:"0", section:"Introduction", cat:"retrieval", isHit:false,
+        text:"Semantic search uses meaning and context rather than exact keyword matching." },
+    ],
+  },
+};
+
+const SAMPLE_QUESTIONS = [
+  { id:"q01", label:"RAG là gì?" },
+  { id:"q03", label:"BERT là gì?" },
+  { id:"q05", label:"Transformer dựa trên gì?" },
+  { id:"q07", label:"Vector database là gì?" },
+  { id:"q19", label:"Hallucination trong LLM?" },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentStrategy = 'A';
+let currentResults = null;
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(function init() {
+  const chips = document.getElementById('chipsContainer');
+  SAMPLE_QUESTIONS.forEach(q => {
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.textContent = q.label;
+    c.onclick = () => loadSample(q.id);
+    chips.appendChild(c);
+  });
+})();
+
+// ── Theme ─────────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+
+// ── Strategy ──────────────────────────────────────────────────────────────────
+function setStrategy(s, btn) {
+  currentStrategy = s;
+  document.querySelectorAll('.strat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('filterRow').style.display = (s === 'C') ? 'flex' : 'none';
+  updateStats(s);
+  if (currentResults) renderResults(currentResults, s);
+}
+
+function updateStats(s) {
+  if (s === 'compare') {
+    document.getElementById('statChunks').textContent = '—';
+    document.getElementById('statH1').textContent = 'A/B/C';
+    document.getElementById('statH3').textContent = '—';
+    document.getElementById('statCoh').textContent = '—';
+    return;
+  }
+  const d = STRATEGIES[s];
+  document.getElementById('statChunks').textContent = d.chunks;
+  document.getElementById('statH1').textContent = d.h1;
+  document.getElementById('statH3').textContent = d.h3;
+  const cohEl = document.getElementById('statCoh');
+  cohEl.textContent = d.coh;
+  cohEl.style.color = s === 'A' ? 'var(--warn)' : 'var(--hit)';
+}
+
+// ── Search ─────────────────────────────────────────────────────────────────────
+function loadSample(id) {
+  const d = SAMPLE_DATA[id];
+  document.getElementById('queryInput').value = d.question;
+  currentResults = d;
+  renderResults(d, currentStrategy);
+}
+
+function runSearch() {
+  const q = document.getElementById('queryInput').value.trim();
+  if (!q) return;
+  // Check if it matches a sample
+  for (const [id, d] of Object.entries(SAMPLE_DATA)) {
+    if (d.question.toLowerCase().includes(q.toLowerCase().slice(0, 20)) ||
+        q.toLowerCase().includes(d.question.toLowerCase().slice(0, 20))) {
+      currentResults = d;
+      renderResults(d, currentStrategy);
+      return;
+    }
+  }
+  // Show "not in demo" message
+  document.getElementById('resultsContainer').innerHTML = `
+    <div class="empty-state">
+      <div class="icon">💡</div>
+      <div>Câu này chưa có trong demo — chọn một trong 5 câu mẫu bên trên,<br>hoặc chạy <code style="font-family:monospace;color:var(--code)">python -m src.run</code> để query thật.</div>
+    </div>`;
+}
+
+function highlightTerms(text, query) {
+  if (!query) return text;
+  const terms = query.split(/\s+/).filter(t => t.length > 3);
+  let out = text;
+  terms.forEach(t => {
+    const re = new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    out = out.replace(re, '<mark>$1</mark>');
+  });
+  return out;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function renderResults(data, strategy) {
+  const container = document.getElementById('resultsContainer');
+  const q = document.getElementById('queryInput').value;
+
+  if (strategy === 'compare') {
+    renderCompare(data, q, container);
+    return;
+  }
+
+  const hits = data[strategy] || [];
+  const hit1 = hits[0]?.isHit;
+  const hit3 = hits.some(h => h.isHit);
+
+  let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
+    <span style="font-size:12px;color:var(--fg2)">Top-3 chunks · strategy <b style="color:var(--accent)">${strategy}</b></span>
+    <span class="hit-badge ${hit1?'hit-yes':'hit-no'}">Hit@1: ${hit1?'✓':'✗'}</span>
+    <span class="hit-badge ${hit3?'hit-yes':'hit-no'}">Hit@3: ${hit3?'✓':'✗'}</span>
+  </div>
+  <div class="results-block">`;
+
+  hits.forEach(h => {
+    const pct = Math.round(h.score * 100);
+    html += `<div class="result-card">
+      <div class="result-header">
+        <span class="rank-badge">#${h.rank}</span>
+        <span class="hit-badge ${h.isHit?'hit-yes':'hit-no'}">${h.isHit?'✅ HIT':'✗ miss'}</span>
+        <div class="score-bar-wrap">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+            <span class="score-val">${pct}%</span>
+            <span class="score-val">cosine</span>
+          </div>
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span class="meta-pill"><b>doc</b> ${h.doc}</span>
+        <span class="meta-pill"><b>p</b>${h.page}</span>
+        <span class="meta-pill"><b>§</b> ${h.section}</span>
+        <span class="meta-pill"><b>cat</b> ${h.cat}</span>
+      </div>
+      <div class="chunk-text">${highlightTerms(h.text, q)}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderCompare(data, q, container) {
+  let html = `<div style="font-size:12px;color:var(--fg2);margin-bottom:8px">So sánh top-3 · A vs B vs C</div>
+  <div class="compare-grid">`;
+
+  ['A','B','C'].forEach(s => {
+    const hits = data[s] || [];
+    const hit1 = hits[0]?.isHit;
+    const hit3 = hits.some(h=>h.isHit);
+    html += `<div class="compare-col">
+      <h4>${s} · ${STRATEGIES[s].label}</h4>
+      <div style="display:flex;gap:5px;margin-bottom:4px">
+        <span class="hit-badge ${hit1?'hit-yes':'hit-no'}" style="font-size:10px">Hit@1${hit1?'✓':'✗'}</span>
+        <span class="hit-badge ${hit3?'hit-yes':'hit-no'}" style="font-size:10px">Hit@3${hit3?'✓':'✗'}</span>
+      </div>`;
+    hits.forEach(h => {
+      html += `<div class="compare-chunk ${h.isHit?'is-hit':''}">
+        <div class="section-title">§ ${h.section} (p${h.page})</div>
+        <div class="chunk-score">${Math.round(h.score*100)}% · ${h.doc.slice(0,22)}</div>
+        <div style="font-size:11px;line-height:1.55">${h.text.slice(0,220)}${h.text.length>220?'…':''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+</script>
